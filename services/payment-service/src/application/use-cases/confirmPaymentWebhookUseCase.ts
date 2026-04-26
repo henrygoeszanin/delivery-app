@@ -13,7 +13,7 @@ export class ConfirmPaymentWebhookUseCase {
     const status = dto.status;
 
     if (existingPayment) {
-      existingPayment.setPixCode(dto.pixCode ?? null);
+      existingPayment.setPixCode(dto.pixCode);
       existingPayment.setPaymentMethod(dto.paymentMethod);
       existingPayment.setAmount(dto.amount);
       existingPayment.setIssuedAt(issuedAt);
@@ -31,7 +31,6 @@ export class ConfirmPaymentWebhookUseCase {
     }
 
     const payment = Payment.create({
-      id: dto.paymentId,
       orderId,
       pixCode: dto.pixCode ?? null,
       paymentMethod: dto.paymentMethod,

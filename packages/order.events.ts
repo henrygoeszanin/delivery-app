@@ -15,6 +15,16 @@ export type OrderCreated = DomainEvent<
   }
 >;
 
+export type PixGenerated = DomainEvent<
+  "payment.pix_generated",
+  {
+    orderId: string;
+    paymentId: string;
+    pixCode: string;
+    amount: number;
+  }
+>;
+
 export type StockReserved = DomainEvent<
   "inventory.stock_reserved",
   {

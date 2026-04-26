@@ -3,7 +3,7 @@ import zod from "zod";
 export const PaymentWebhookDTO = zod.object({
   paymentId: zod.uuid(),
   orderId: zod.uuid(),
-  pixCode: zod.string().nullable().optional(),
+  pixCode: zod.string(),
   paymentMethod: zod.enum(["pix", "credit_card", "boleto"]),
   failureReason: zod.string().nullable().optional(),
   amount: zod.number().positive(),

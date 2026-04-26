@@ -5,7 +5,7 @@ export class Payment {
   constructor(
     public id: string,
     public orderId: string,
-    public pixCode: string | null,
+    public pixCode: string,
     public paymentMethod: PaymentMethod,
     public failureReason: string | null,
     public amount: number,
@@ -18,7 +18,7 @@ export class Payment {
   static restore(params: {
     id: string;
     orderId: string;
-    pixCode: string | null;
+    pixCode: string;
     paymentMethod: PaymentMethod;
     failureReason: string | null;
     amount: number;
@@ -42,14 +42,13 @@ export class Payment {
   }
 
   static create(params: {
-    id: string;
     orderId: string;
     pixCode?: string | null;
     paymentMethod: PaymentMethod;
     failureReason?: string | null;
     amount: number;
     issuedAt: Date;
-    status: PaymentStatus;
+    status?: PaymentStatus;
   }): Payment {
     const now = new Date();
     return new Payment(
@@ -60,7 +59,7 @@ export class Payment {
       params.failureReason ?? null,
       params.amount,
       params.issuedAt,
-      "pending",
+      params.status ?? "pending",
       now,
       now,
     );
@@ -93,7 +92,7 @@ export class Payment {
     this.updatedAt = new Date();
   }
 
-  setPixCode(pixCode: string | null) {
+  setPixCode(pixCode: string) {
     this.pixCode = pixCode;
     this.updatedAt = new Date();
   }

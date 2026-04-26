@@ -65,7 +65,7 @@ export class PaymentRepository implements IPaymentRepository {
     return Payment.restore({
       id: row.id as string,
       orderId: row.order_id as string,
-      pixCode: row.pix_code as string | null,
+      pixCode: row.pix_code as string,
       paymentMethod: row.payment_method as Payment["paymentMethod"],
       failureReason: row.failure_reason as string | null,
       amount: Number(row.amount),
