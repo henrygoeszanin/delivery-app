@@ -1,0 +1,9 @@
+{
+  "name": "@delivery/migrate",
+  "version": "0.1.0",
+  "private": true,
+  "module": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  }
+}

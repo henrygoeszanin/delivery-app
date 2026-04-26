@@ -1,0 +1,9 @@
+{
+  "name": "payment-service",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "migrate": "bun ./src/infrastructure/persistence/migrate.ts",
+    "start": "bun ./src/main.ts"
+  }
+}
