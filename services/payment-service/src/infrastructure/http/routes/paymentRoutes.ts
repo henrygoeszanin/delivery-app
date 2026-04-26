@@ -7,6 +7,7 @@ import { db } from "../../persistence/db";
 import { PaymentRepository } from "../../persistence/paymentRepository";
 import { ConfirmPaymentWebhookUseCase } from "../../../application/use-cases/confirmPaymentWebhookUseCase";
 import type { IPaymentRepository } from "../../../domain/repositories/IPaymentRepository";
+import { GetPaymentByOrderIdUseCase } from "services/payment-service/src/application/use-cases/getPaymentByOrderIdUseCase";
 
 export async function paymentRoutes(app: FastifyInstance) {
   const fastify = app.withTypeProvider<ZodTypeProvider>();
@@ -14,6 +15,7 @@ export async function paymentRoutes(app: FastifyInstance) {
   const repo: IPaymentRepository = new PaymentRepository(db);
   const controller = new PaymentController(
     new ConfirmPaymentWebhookUseCase(repo),
+    new GetPaymentByOrderIdUseCase(repo),
   );
 
   fastify.post(
@@ -24,17 +26,11 @@ export async function paymentRoutes(app: FastifyInstance) {
     (req, reply) => controller.webhook(req, reply),
   );
 
-  fastify.get<{ Params: { id: string } }>(
-    "/payments/:id",
+  fastify.get<{ Params: { orderId: string } }>(
+    "/payments/:orderId",
     {
       schema: { params: z.object({ id: z.uuid() }) },
     },
-    async (req, reply) => {
-      const payment = await repo.findById(req.params.id);
-      if (!payment) {
-        return reply.status(404).send({ message: "Payment not found" });
-      }
-      return reply.status(200).send(payment);
-    },
+    (req, reply) => controller.getPaymentByOrderId(req, reply),
   );
 }

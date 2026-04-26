@@ -47,11 +47,11 @@ export class PaymentRepository implements IPaymentRepository {
     `;
   }
 
-  async findById(id: string): Promise<Payment | null> {
+  async findByOrderId(orderId: string): Promise<Payment | null> {
     const rows = await this.db`
       SELECT id, order_id, pix_code, payment_method, failure_reason, amount, issued_at, status, created_at, updated_at
       FROM payments
-      WHERE id = ${id}
+      WHERE order_id = ${orderId}
     `;
 
     if (rows.length === 0) {

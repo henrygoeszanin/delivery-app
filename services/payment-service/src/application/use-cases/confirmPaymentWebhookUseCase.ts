@@ -6,8 +6,8 @@ export class ConfirmPaymentWebhookUseCase {
   constructor(private readonly paymentRepository: IPaymentRepository) {}
 
   async execute(dto: TypePaymentWebhookDTO): Promise<Payment> {
-    const existingPayment = await this.paymentRepository.findById(
-      dto.paymentId,
+    const existingPayment = await this.paymentRepository.findByOrderId(
+      dto.orderId,
     );
     const issuedAt = new Date(dto.issuedAt);
     const status = dto.status;
