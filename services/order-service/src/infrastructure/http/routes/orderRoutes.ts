@@ -1,11 +1,26 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { CancelOrderDTO } from "../../../application/dtos/cancelOrderDto";
-import { ConfirmPaymentOrderDTO } from "../../../application/dtos/confirmPaymentOrderDto";
-import { CreateOrderDTO } from "../../../application/dtos/createOrderDto";
-import { UpdateOrderDTO } from "../../../application/dtos/updateOrderDto";
-import { UpdateOrderStatusDTO } from "../../../application/dtos/updateOrderStatusDto";
+import {
+  CancelOrderDTO,
+  type TypeCancelOrderDTO,
+} from "../../../application/dtos/cancelOrderDto";
+import {
+  ConfirmPaymentOrderDTO,
+  type TypeConfirmPaymentOrderDTO,
+} from "../../../application/dtos/confirmPaymentOrderDto";
+import {
+  CreateOrderDTO,
+  type TypeCreateOrderDTO,
+} from "../../../application/dtos/createOrderDto";
+import {
+  UpdateOrderDTO,
+  type TypeUpdateOrderDTO,
+} from "../../../application/dtos/updateOrderDto";
+import {
+  UpdateOrderStatusDTO,
+  type TypeUpdateOrderStatusDTO,
+} from "../../../application/dtos/updateOrderStatusDto";
 import { OrderController } from "../controllers/orderController";
 import { db } from "../../persistence/db";
 import { OrderRepository } from "../../persistence/orderRepository";
@@ -36,7 +51,7 @@ export async function orderRoutes(
     new UpdateOrderStatusUseCase(repo),
   );
 
-  fastify.post(
+  fastify.post<{ Body: TypeCreateOrderDTO }>(
     "/orders",
     {
       schema: { body: CreateOrderDTO },
@@ -52,7 +67,10 @@ export async function orderRoutes(
     (req, reply) => controller.findById(req, reply),
   );
 
-  fastify.put(
+  fastify.put<{
+    Params: { id: string };
+    Body: TypeUpdateOrderDTO;
+  }>(
     "/orders/:id",
     {
       schema: {
@@ -63,7 +81,10 @@ export async function orderRoutes(
     (req, reply) => controller.update(req, reply),
   );
 
-  fastify.post(
+  fastify.post<{
+    Params: { id: string };
+    Body: TypeCancelOrderDTO;
+  }>(
     "/orders/:id/cancel",
     {
       schema: {
@@ -74,7 +95,10 @@ export async function orderRoutes(
     (req, reply) => controller.cancel(req, reply),
   );
 
-  fastify.post(
+  fastify.post<{
+    Params: { id: string };
+    Body: TypeConfirmPaymentOrderDTO;
+  }>(
     "/orders/:id/confirm-payment",
     {
       schema: {
@@ -85,7 +109,10 @@ export async function orderRoutes(
     (req, reply) => controller.confirmPayment(req, reply),
   );
 
-  fastify.patch(
+  fastify.patch<{
+    Params: { id: string };
+    Body: TypeUpdateOrderStatusDTO;
+  }>(
     "/orders/:id/status",
     {
       schema: {

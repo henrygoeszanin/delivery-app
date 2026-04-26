@@ -1,9 +1,18 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { AddCustomerAddressDTO } from "../../../application/dtos/addCustomerAddressDto";
-import { CreateCustomerDTO } from "../../../application/dtos/createCustomerDto";
-import { UpdateCustomerAddressDTO } from "../../../application/dtos/updateCustomerAddressDto";
+import {
+  AddCustomerAddressDTO,
+  type TypeAddCustomerAddressDTO,
+} from "../../../application/dtos/addCustomerAddressDto";
+import {
+  CreateCustomerDTO,
+  type TypeCreateCustomerDTO,
+} from "../../../application/dtos/createCustomerDto";
+import {
+  UpdateCustomerAddressDTO,
+  type TypeUpdateCustomerAddressDTO,
+} from "../../../application/dtos/updateCustomerAddressDto";
 import { CustomerController } from "../controllers/customerController";
 import { db } from "../../persistence/db";
 import { CustomerRepository } from "../../persistence/customerRepository";
@@ -22,7 +31,7 @@ export async function customerRoutes(app: FastifyInstance) {
     new UpdateCustomerAddressUseCase(repo),
   );
 
-  fastify.post(
+  fastify.post<{ Body: TypeCreateCustomerDTO }>(
     "/customers",
     {
       schema: { body: CreateCustomerDTO },
@@ -30,7 +39,10 @@ export async function customerRoutes(app: FastifyInstance) {
     (req, reply) => controller.create(req, reply),
   );
 
-  fastify.post(
+  fastify.post<{
+    Params: { id: string };
+    Body: TypeAddCustomerAddressDTO;
+  }>(
     "/customers/:id/address",
     {
       schema: {
@@ -41,7 +53,10 @@ export async function customerRoutes(app: FastifyInstance) {
     (req, reply) => controller.addAddress(req, reply),
   );
 
-  fastify.put(
+  fastify.put<{
+    Params: { id: string };
+    Body: TypeUpdateCustomerAddressDTO;
+  }>(
     "/customers/:id/address",
     {
       schema: {

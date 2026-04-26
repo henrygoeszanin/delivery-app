@@ -14,7 +14,6 @@ export class ProcessPaymentUseCase {
     const existing = await this.paymentRepo.findByOrderId(event.orderId);
     if (existing) return;
 
-    // cria tentativa com Pix simulado
     const attempt = Payment.create({
       orderId: event.orderId,
       paymentMethod: "pix",

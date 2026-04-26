@@ -5,7 +5,10 @@ import { ProductRepository } from "../../persistence/productRepository";
 import { db } from "../../persistence/db";
 import { RegisterNewProductUseCase } from "services/inventory-service/src/application/use-cases/registerNewProductUseCase";
 import { InventoryController } from "../controller/inventoryController";
-import { RegisterNewProductDTO } from "services/inventory-service/src/application/dtos/registerNewProductDto";
+import {
+  RegisterNewProductDTO,
+  type TypeRegisterNewProductDTO,
+} from "services/inventory-service/src/application/dtos/registerNewProductDto";
 
 export async function inventoryRoutes(app: FastifyInstance) {
   const fastify = app.withTypeProvider<ZodTypeProvider>();
@@ -15,7 +18,7 @@ export async function inventoryRoutes(app: FastifyInstance) {
     new RegisterNewProductUseCase(repo),
   );
 
-  fastify.post(
+  fastify.post<{ Body: TypeRegisterNewProductDTO }>(
     "/products",
     { schema: { body: RegisterNewProductDTO } },
     (req, reply) => controller.registerNewProduct(req, reply),

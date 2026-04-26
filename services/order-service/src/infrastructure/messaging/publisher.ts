@@ -15,7 +15,7 @@ export class RabbitMQPublisher implements IEventPublisher {
       "delivery.events",
       event.eventType,
       Buffer.from(JSON.stringify(message)),
-      { persistent: true }, // sobrevive a restart do RabbitMQ
+      { persistent: true },
     );
   }
 }

@@ -1,7 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { PaymentWebhookDTO } from "../../../application/dtos/paymentWebhookDto";
+import {
+  PaymentWebhookDTO,
+  type TypePaymentWebhookDTO,
+} from "../../../application/dtos/paymentWebhookDto";
 import { PaymentController } from "../controllers/paymentController";
 import { db } from "../../persistence/db";
 import { PaymentRepository } from "../../persistence/paymentRepository";
@@ -18,7 +21,7 @@ export async function paymentRoutes(app: FastifyInstance) {
     new GetPaymentByOrderIdUseCase(repo),
   );
 
-  fastify.post(
+  fastify.post<{ Body: TypePaymentWebhookDTO }>(
     "/payments/webhook",
     {
       schema: { body: PaymentWebhookDTO },
@@ -29,7 +32,7 @@ export async function paymentRoutes(app: FastifyInstance) {
   fastify.get<{ Params: { orderId: string } }>(
     "/payments/:orderId",
     {
-      schema: { params: z.object({ id: z.uuid() }) },
+      schema: { params: z.object({ orderId: z.uuid() }) },
     },
     (req, reply) => controller.getPaymentByOrderId(req, reply),
   );

@@ -9,6 +9,11 @@ import {
 import { migrate } from "@delivery/migrate";
 import { db } from "./infrastructure/persistence/db";
 import { paymentRoutes } from "./infrastructure/http/routes/paymentRoutes";
+import { PaymentRepository } from "./infrastructure/persistence/paymentRepository";
+import { ProcessPaymentUseCase } from "./application/use-cases/proccesPaymentUseCase";
+import { OrderCreatedConsumer } from "./infrastructure/messaging/consumer";
+import amqp from "amqplib";
+import { RabbitMQPublisher } from "./infrastructure/messaging/publisher";
 
 await migrate(
   db,
@@ -46,6 +51,16 @@ app.setErrorHandler((error, _request, reply) => {
     message: fastifyError.message ?? "Internal server error",
   });
 });
+
+const connection = await amqp.connect(process.env.RABBITMQ_URL!);
+const channel = await connection.createChannel();
+
+const repo = new PaymentRepository(db);
+const pub = new RabbitMQPublisher(channel);
+const useCase = new ProcessPaymentUseCase(repo, pub);
+
+const consumer = new OrderCreatedConsumer(channel, useCase);
+await consumer.start();
 
 app.register(paymentRoutes, { prefix: "/api" });
 app.get("/health", () => ({ status: "ok" }));
