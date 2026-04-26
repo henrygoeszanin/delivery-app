@@ -126,7 +126,7 @@ export async function orderRoutes(
   );
 
   //long pooling para esperar pagamento via Pix
-  fastify.get(
+  fastify.get<{ Params: { id: string } }>(
     "/orders/:id/pix",
     {
       schema: { params: z.object({ id: z.uuid() }) },
