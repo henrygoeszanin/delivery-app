@@ -33,6 +33,7 @@ import { UpdateOrderUseCase } from "services/order-service/src/application/use-c
 import type { IOrderRepository } from "services/order-service/src/domain/repositories/IOrderRepository";
 import { RabbitMQPublisher } from "../../messaging/publisher";
 import type { Channel } from "amqplib";
+import { WaitForPixUseCase } from "services/order-service/src/application/use-cases/waitForPixUseCase";
 
 export async function orderRoutes(
   app: FastifyInstance,
@@ -49,6 +50,7 @@ export async function orderRoutes(
     new CancelOrderUseCase(repo),
     new ConfirmPaymentUseCase(repo),
     new UpdateOrderStatusUseCase(repo),
+    new WaitForPixUseCase(repo),
   );
 
   fastify.post<{ Body: TypeCreateOrderDTO }>(
@@ -121,5 +123,14 @@ export async function orderRoutes(
       },
     },
     (req, reply) => controller.updateStatus(req, reply),
+  );
+
+  //long pooling para esperar pagamento via Pix
+  fastify.get(
+    "/orders/:id/pix",
+    {
+      schema: { params: z.object({ id: z.uuid() }) },
+    },
+    (req, reply) => controller.waitForPixLongPooling(req, reply),
   );
 }

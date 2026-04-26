@@ -10,6 +10,7 @@ import type { CreateOrderUseCase } from "services/order-service/src/application/
 import type { FindOrderByIdUseCase } from "services/order-service/src/application/use-cases/findOrderByIdUseCase";
 import type { UpdateOrderStatusUseCase } from "services/order-service/src/application/use-cases/updateOrderStatusUseCase";
 import type { UpdateOrderUseCase } from "services/order-service/src/application/use-cases/updateOrderUseCase";
+import type { WaitForPixUseCase } from "services/order-service/src/application/use-cases/waitForPixUseCase";
 
 export class OrderController {
   constructor(
@@ -19,6 +20,7 @@ export class OrderController {
     private readonly cancelOrderUseCase: CancelOrderUseCase,
     private readonly confirmPaymentUseCase: ConfirmPaymentUseCase,
     private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
+    private readonly waitForPix: WaitForPixUseCase,
   ) {}
 
   async create(
@@ -121,5 +123,24 @@ export class OrderController {
     }
 
     return reply.status(200).send(order);
+  }
+
+  async waitForPixLongPooling(
+    request: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply,
+  ) {
+    const result = await this.waitForPix.execute(request.params.id);
+
+    if (!result.ready) {
+      return reply.status(202).send({
+        message: "Payment not ready yet, try again",
+      });
+    }
+
+    return reply.status(200).send({
+      pixCode: result.pixCode,
+      paymentId: result.paymentId,
+      amount: result.amount,
+    });
   }
 }
