@@ -9,8 +9,10 @@ export class PaymentRepository implements IPaymentRepository {
     await this.db`
       INSERT INTO payments (
         id,
+        order_id,
         pix_code,
         payment_method,
+        failure_reason,
         amount,
         issued_at,
         status,
@@ -18,8 +20,10 @@ export class PaymentRepository implements IPaymentRepository {
         updated_at
       ) VALUES (
         ${payment.id},
+        ${payment.orderId},
         ${payment.pixCode},
         ${payment.paymentMethod},
+        ${payment.failureReason},
         ${payment.amount},
         ${payment.issuedAt},
         ${payment.status},
@@ -34,6 +38,7 @@ export class PaymentRepository implements IPaymentRepository {
       UPDATE payments SET
         pix_code = ${payment.pixCode},
         payment_method = ${payment.paymentMethod},
+        failure_reason = ${payment.failureReason},
         amount = ${payment.amount},
         issued_at = ${payment.issuedAt},
         status = ${payment.status},
@@ -44,7 +49,7 @@ export class PaymentRepository implements IPaymentRepository {
 
   async findById(id: string): Promise<Payment | null> {
     const rows = await this.db`
-      SELECT id, pix_code, payment_method, amount, issued_at, status, created_at, updated_at
+      SELECT id, order_id, pix_code, payment_method, failure_reason, amount, issued_at, status, created_at, updated_at
       FROM payments
       WHERE id = ${id}
     `;
@@ -59,8 +64,10 @@ export class PaymentRepository implements IPaymentRepository {
   private toEntity(row: Record<string, unknown>): Payment {
     return Payment.restore({
       id: row.id as string,
+      orderId: row.order_id as string,
       pixCode: row.pix_code as string | null,
       paymentMethod: row.payment_method as Payment["paymentMethod"],
+      failureReason: row.failure_reason as string | null,
       amount: Number(row.amount),
       issuedAt: new Date(row.issued_at as string),
       status: row.status as Payment["status"],

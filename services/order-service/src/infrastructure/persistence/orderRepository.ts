@@ -120,7 +120,6 @@ export class OrderRepository implements IOrderRepository {
     }
   }
 
-  // mapeia linha do banco → entidade de domínio
   private toEntity(row: Record<string, unknown>): Order {
     return Order.restore({
       id: row.id as string,

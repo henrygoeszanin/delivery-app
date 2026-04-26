@@ -4,8 +4,10 @@ export type PaymentStatus = "pending" | "approved" | "failed" | "refunded";
 export class Payment {
   constructor(
     public id: string,
+    public orderId: string,
     public pixCode: string | null,
     public paymentMethod: PaymentMethod,
+    public failureReason: string | null,
     public amount: number,
     public issuedAt: Date,
     public status: PaymentStatus,
@@ -15,8 +17,10 @@ export class Payment {
 
   static restore(params: {
     id: string;
+    orderId: string;
     pixCode: string | null;
     paymentMethod: PaymentMethod;
+    failureReason: string | null;
     amount: number;
     issuedAt: Date;
     status: PaymentStatus;
@@ -25,8 +29,10 @@ export class Payment {
   }): Payment {
     return new Payment(
       params.id,
-      params.pixCode,
+      params.orderId,
+      params.pixCode ?? null,
       params.paymentMethod,
+      params.failureReason,
       params.amount,
       params.issuedAt,
       params.status,
@@ -37,8 +43,10 @@ export class Payment {
 
   static create(params: {
     id: string;
+    orderId: string;
     pixCode?: string | null;
     paymentMethod: PaymentMethod;
+    failureReason?: string | null;
     amount: number;
     issuedAt: Date;
     status: PaymentStatus;
@@ -46,8 +54,10 @@ export class Payment {
     const now = new Date();
     return new Payment(
       params.id,
+      params.orderId,
       params.pixCode ?? null,
       params.paymentMethod,
+      params.failureReason ?? null,
       params.amount,
       params.issuedAt,
       params.status,
@@ -78,6 +88,11 @@ export class Payment {
 
   setAmount(amount: number) {
     this.amount = amount;
+    this.updatedAt = new Date();
+  }
+
+  setFailureReason(failureReason: string | null) {
+    this.failureReason = failureReason;
     this.updatedAt = new Date();
   }
 }
