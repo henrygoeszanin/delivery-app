@@ -25,6 +25,8 @@ export class Order {
     public status: OrderStatus,
     public createdAt: Date,
     public updatedAt: Date,
+    public pixCode?: string | null,
+    public paymentId?: string | null,
   ) {}
 
   static restore(params: {
@@ -142,5 +144,17 @@ export class Order {
         item.quantity * item.unitPrice * (1 - (item.discount ?? 0));
       return total + itemTotal;
     }, 0);
+  }
+
+  attachPixCode(pixCode: string, paymentId: string) {
+    if (this.status !== "pending") {
+      throw new Error(
+        `Cannot attach Pix code to order with status ${this.status}`,
+      );
+    }
+    this.status = "awaiting_payment";
+    this.pixCode = pixCode;
+    this.paymentId = paymentId;
+    this.updatedAt = new Date();
   }
 }
