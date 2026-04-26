@@ -4,6 +4,12 @@
   "type": "module",
   "scripts": {
     "migrate": "bun ./src/infrastructure/persistence/migrate.ts",
-    "start": "bun ./src/main.ts"
+    "start": "bun ./src/main.ts",
+    "dev": "bun --watch ./src/main.ts"
+  },
+  "dependencies": {
+    "fastify": "^5.8.5",
+    "fastify-type-provider-zod": "^6.1.0",
+    "zod": "^4.3.6"
   }
 }

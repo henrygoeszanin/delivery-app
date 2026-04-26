@@ -16,13 +16,19 @@ import { FindOrderByIdUseCase } from "services/order-service/src/application/use
 import { UpdateOrderStatusUseCase } from "services/order-service/src/application/use-cases/updateOrderStatusUseCase";
 import { UpdateOrderUseCase } from "services/order-service/src/application/use-cases/updateOrderUseCase";
 import type { IOrderRepository } from "services/order-service/src/domain/repositories/IOrderRepository";
+import { RabbitMQPublisher } from "../../messaging/publisher";
+import type { Channel } from "amqplib";
 
-export async function orderRoutes(app: FastifyInstance) {
+export async function orderRoutes(
+  app: FastifyInstance,
+  options: { channel: Channel },
+) {
   const fastify = app.withTypeProvider<ZodTypeProvider>();
 
   const repo: IOrderRepository = new OrderRepository(db);
+  const publisher = new RabbitMQPublisher(options.channel);
   const controller = new OrderController(
-    new CreateOrderUseCase(repo),
+    new CreateOrderUseCase(repo, publisher),
     new FindOrderByIdUseCase(repo),
     new UpdateOrderUseCase(repo),
     new CancelOrderUseCase(repo),

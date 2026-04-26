@@ -9,6 +9,7 @@ import {
 import { migrate } from "@delivery/migrate";
 import { db } from "./infrastructure/persistence/db";
 import { orderRoutes } from "./infrastructure/http/routes/orderRoutes";
+import amqp from "amqplib";
 
 await migrate(
   db,
@@ -47,7 +48,12 @@ app.setErrorHandler((error, _request, reply) => {
   });
 });
 
-app.register(orderRoutes, { prefix: "/api" });
+const connection = await amqp.connect(process.env.RABBITMQ_URL!);
+const channel = await connection.createChannel();
+
+await channel.assertExchange("delivery.events", "topic", { durable: true });
+
+app.register(orderRoutes, { prefix: "/api", channel });
 app.get("/health", () => ({ status: "ok" }));
 
 await app.listen({ port: 3001, host: "0.0.0.0" });
