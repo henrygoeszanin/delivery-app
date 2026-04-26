@@ -92,11 +92,32 @@ export class OrderRepository implements IOrderRepository {
   async update(order: Order): Promise<void> {
     await this.db`
       UPDATE orders SET
-        status     = ${order.status},
+        customer_id = ${order.customerId},
+        status      = ${order.status},
         total_amount = ${order.totalAmount},
-        updated_at = ${order.updatedAt}
+        updated_at  = ${order.updatedAt}
       WHERE id = ${order.id}
     `;
+
+    await this.db`
+      DELETE FROM order_items
+      WHERE order_id = ${order.id}
+    `;
+
+    if (order.items.length > 0) {
+      for (const item of order.items) {
+        await this.db`
+          INSERT INTO order_items (order_id, product_id, quantity, unit_price, discount)
+          VALUES (
+            ${order.id},
+            ${item.productId},
+            ${item.quantity},
+            ${item.unitPrice},
+            ${item.discount ?? 0}
+          )
+        `;
+      }
+    }
   }
 
   // mapeia linha do banco → entidade de domínio

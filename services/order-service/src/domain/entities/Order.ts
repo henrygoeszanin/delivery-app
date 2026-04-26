@@ -1,3 +1,16 @@
+export type OrderStatus =
+  | "pending"
+  | "confirmed"
+  | "shipped"
+  | "delivered"
+  | "cancelled"
+  | "payment_failed"
+  | "stock_reserved"
+  | "stock_reservation_failed"
+  | "payment_processed"
+  | "awaiting_payment"
+  | "awaiting_stock";
+
 export class Order {
   constructor(
     public id: string,
@@ -9,18 +22,7 @@ export class Order {
       discount?: number;
     }>,
     public totalAmount: number,
-    public status:
-      | "pending"
-      | "confirmed"
-      | "shipped"
-      | "delivered"
-      | "cancelled"
-      | "payment_failed"
-      | "stock_reserved"
-      | "stock_reservation_failed"
-      | "payment_processed"
-      | "awaiting_payment"
-      | "awaiting_stock",
+    public status: OrderStatus,
     public createdAt: Date,
     public updatedAt: Date,
   ) {}
@@ -79,6 +81,59 @@ export class Order {
     const now = new Date();
     const id = crypto.randomUUID();
     return new Order(id, customerId, items, totalAmount, "pending", now, now);
+  }
+
+  updateDetails(params: {
+    customerId?: string;
+    items?: Array<{
+      productId: string;
+      quantity: number;
+      unitPrice: number;
+      discount?: number;
+    }>;
+  }) {
+    if (params.customerId) {
+      this.customerId = params.customerId;
+    }
+
+    if (params.items) {
+      this.items = params.items;
+      this.totalAmount = this.total;
+    }
+
+    this.updatedAt = new Date();
+  }
+
+  cancel() {
+    if (this.status === "cancelled") {
+      return;
+    }
+
+    this.status = "cancelled";
+    this.updatedAt = new Date();
+  }
+
+  confirmPayment() {
+    this.status = "payment_processed";
+    this.updatedAt = new Date();
+  }
+
+  setStatus(
+    status:
+      | "pending"
+      | "confirmed"
+      | "shipped"
+      | "delivered"
+      | "cancelled"
+      | "payment_failed"
+      | "stock_reserved"
+      | "stock_reservation_failed"
+      | "payment_processed"
+      | "awaiting_payment"
+      | "awaiting_stock",
+  ) {
+    this.status = status;
+    this.updatedAt = new Date();
   }
 
   get total(): number {
