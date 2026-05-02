@@ -10,7 +10,6 @@ export class ProcessPaymentUseCase {
   ) {}
 
   async execute(event: OrderCreated["payload"]): Promise<void> {
-    // idempotência — não reprocessar o mesmo pedido
     const existing = await this.paymentRepo.findByOrderId(event.orderId);
     if (existing) return;
 
