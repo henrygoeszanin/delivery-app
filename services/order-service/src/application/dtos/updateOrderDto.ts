@@ -1,4 +1,5 @@
 import zod from "zod";
+import { Order } from "../../domain/entities/Order";
 
 export const UpdateOrderDTO = zod.object({
   customerId: zod.string().optional(),
@@ -15,3 +16,7 @@ export const UpdateOrderDTO = zod.object({
 });
 
 export type TypeUpdateOrderDTO = zod.infer<typeof UpdateOrderDTO>;
+
+export type UpdateOrderResult =
+  | { success: true; order: Order }
+  | { success: false; reason: "not_found" | "no_updates" | "without_pix_code" };

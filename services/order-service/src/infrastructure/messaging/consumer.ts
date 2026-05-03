@@ -29,7 +29,6 @@ export class PaymentPixGeneratedConsumer {
         const event: PixGenerated = JSON.parse(msg.content.toString());
         const { orderId, pixCode, paymentId } = event.payload;
 
-        // busca o pedido e atualiza com os dados do Pix
         const order = await this.orderRepo.findById(orderId);
         if (!order) {
           this.channel.nack(msg, false, false);

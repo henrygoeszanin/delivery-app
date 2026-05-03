@@ -85,6 +85,7 @@ export class Order {
     return new Order(id, customerId, items, totalAmount, "pending", now, now);
   }
 
+
   updateDetails(params: {
     customerId?: string;
     items?: Array<{

@@ -1,10 +1,6 @@
 import type { TypeUpdateOrderDTO } from "../dtos/updateOrderDto";
 import type { IOrderRepository } from "../../domain/repositories/IOrderRepository";
-import type { Order } from "../../domain/entities/Order";
-
-export type UpdateOrderResult =
-  | { success: true; order: Order }
-  | { success: false; reason: "not_found" | "no_updates" };
+import type { UpdateOrderResult } from "../dtos/updateOrderDto";
 
 export class UpdateOrderUseCase {
   constructor(private readonly orderRepository: IOrderRepository) {}

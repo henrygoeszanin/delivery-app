@@ -9,7 +9,7 @@ export class OrderCreatedConsumer {
 
   constructor(
     private readonly channel: Channel,
-    private readonly useCase: ProcessPaymentUseCase,
+    private readonly processPaymentUseCase: ProcessPaymentUseCase,
   ) {}
 
   async start(): Promise<void> {
@@ -26,7 +26,6 @@ export class OrderCreatedConsumer {
 
     await this.channel.bindQueue(this.QUEUE, this.EXCHANGE, this.ROUTING);
 
-    // processa uma mensagem por vez
     this.channel.prefetch(1);
 
     this.channel.consume(this.QUEUE, async (msg: ConsumeMessage | null) => {
@@ -41,9 +40,8 @@ export class OrderCreatedConsumer {
           orderId: event.payload.orderId,
         });
 
-        await this.useCase.execute(event.payload);
+        await this.processPaymentUseCase.execute(event.payload);
 
-        // confirma que processou com sucesso
         this.channel.ack(msg);
       } catch (err) {
         console.error({
