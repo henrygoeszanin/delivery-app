@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "migrate": "bun ./src/infrastructure/persistence/migrate.ts",
-    "start": "bun ./src/main.ts"
+    "start": "bun ./src/main.ts",
+    "dev": "bun --watch ./src/main.ts"
   }
 }

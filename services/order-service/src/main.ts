@@ -10,7 +10,7 @@ import { migrate } from "@delivery/migrate";
 import { db } from "./infrastructure/persistence/db";
 import { orderRoutes } from "./infrastructure/http/routes/orderRoutes";
 import amqp from "amqplib";
-
+import { rabbitConfig } from "./infrastructure/config";
 await migrate(
   db,
   join(import.meta.dir, "infrastructure", "persistence", "migrations"),
@@ -28,7 +28,8 @@ app.setErrorHandler((error, _request, reply) => {
       message: "Validation error",
       issues: error.validation.map((issue) => ({
         field:
-          issue.instancePath.replace(/^\//, "").replace(/\//g, ".") || "root",
+          issue.instancePath.replace(/^\//, "").replaceAll(/\//g, ".") ||
+          "root",
         message: issue.message,
       })),
     });
@@ -48,10 +49,10 @@ app.setErrorHandler((error, _request, reply) => {
   });
 });
 
-const connection = await amqp.connect(process.env.RABBITMQ_URL!);
+const connection = await amqp.connect(rabbitConfig.url);
 const channel = await connection.createChannel();
 
-await channel.assertExchange("delivery.events", "topic", { durable: true });
+await channel.assertExchange(rabbitConfig.exchange, "topic", { durable: true });
 
 app.register(orderRoutes, { prefix: "/api", channel });
 app.get("/health", () => ({ status: "ok" }));

@@ -3,14 +3,19 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail --names \"api,order,payment,inventory,customer,notification\" --prefix \"[{name}]\" \"bun --watch services\\api-gateway\\src\\main.ts\" \"bun --watch services\\order-service\\src\\main.ts\" \"bun --watch services\\payment-service\\src\\main.ts\" \"bun --watch services\\inventory-service\\src\\main.ts\" \"bun --watch services\\customer-service\\src\\main.ts\" \"bun --watch services\\notification-service\\src\\main.ts\"",
+    "start": "concurrently --kill-others-on-fail --names \"api,order,payment,inventory,customer,notification\" --prefix \"[{name}]\" \"cd services\\api-gateway && bun run start\" \"cd services\\order-service && bun run start\" \"cd services\\payment-service && bun run start\" \"cd services\\inventory-service && bun run start\" \"cd services\\customer-service && bun run start\" \"cd services\\notification-service && bun run start\""
+  },
   "workspaces": [
     "packages/*",
     "services/*"
   ],
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "concurrently": "^9.2.1"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

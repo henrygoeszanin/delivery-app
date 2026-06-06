@@ -9,6 +9,9 @@ import {
   isResponseSerializationError,
 } from "fastify-type-provider-zod";
 import { inventoryRoutes } from "./infrastructure/http/routes/inventoryRoutes";
+import { config } from "dotenv";
+
+config();
 
 await migrate(
   db,

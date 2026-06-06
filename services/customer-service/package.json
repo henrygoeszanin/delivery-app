@@ -8,6 +8,7 @@
     "dev": "bun --watch ./src/main.ts"
   },
   "dependencies": {
+    "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
     "fastify-type-provider-zod": "^6.1.0",
     "zod": "^4.3.6"

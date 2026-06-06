@@ -14,6 +14,7 @@ import { ProcessPaymentUseCase } from "./application/use-cases/proccesPaymentUse
 import { OrderCreatedConsumer } from "./infrastructure/messaging/consumer";
 import amqp from "amqplib";
 import { RabbitMQPublisher } from "./infrastructure/messaging/publisher";
+import { rabbitConfig } from "./infrastructure/config";
 
 await migrate(
   db,
@@ -52,7 +53,7 @@ app.setErrorHandler((error, _request, reply) => {
   });
 });
 
-const connection = await amqp.connect(process.env.RABBITMQ_URL!);
+const connection = await amqp.connect(rabbitConfig.url);
 const channel = await connection.createChannel();
 
 const repo = new PaymentRepository(db);

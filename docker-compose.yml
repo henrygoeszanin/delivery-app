@@ -1,36 +1,87 @@
 services:
   rabbitmq:
-    image: rabbitmq:3-management
-    ports: ["5672:5672", "15672:15672"]
+    image: rabbitmq:4.1-management-alpine
+    container_name: delivery-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
 
   postgres-orders:
-    image: postgres:16
+    image: postgres:17-alpine
+    container_name: delivery-postgres-orders
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: orders
-      POSTGRES_PASSWORD: secret
       POSTGRES_USER: postgres
-    ports: ["5432:5432"]
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_orders_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   postgres-inventory:
-    image: postgres:16
+    image: postgres:17-alpine
+    container_name: delivery-postgres-inventory
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_DB: inventory
-      POSTGRES_PASSWORD: secret
       POSTGRES_USER: postgres
-    ports: ["5433:5432"]
-
-  postgres-customers:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: customers
       POSTGRES_PASSWORD: secret
-      POSTGRES_USER: postgres
-    ports: ["5434:5432"]
+    volumes:
+      - postgres_inventory_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   postgres-payments:
-    image: postgres:16
+    image: postgres:17-alpine
+    container_name: delivery-postgres-payments
+    ports:
+      - "5434:5432"
     environment:
       POSTGRES_DB: payments
-      POSTGRES_PASSWORD: secret
       POSTGRES_USER: postgres
-    ports: ["5435:5432"]
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_payments_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-customers:
+    image: postgres:17-alpine
+    container_name: delivery-postgres-customers
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: customers
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_customers_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rabbitmq_data:
+  postgres_orders_data:
+  postgres_inventory_data:
+  postgres_payments_data:
+  postgres_customers_data:
