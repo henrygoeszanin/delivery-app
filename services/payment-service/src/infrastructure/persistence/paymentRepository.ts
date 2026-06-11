@@ -14,7 +14,7 @@ export class PaymentRepository implements IPaymentRepository {
         payment_method,
         failure_reason,
         amount,
-        issued_at,
+        due_date,
         status,
         created_at,
         updated_at
@@ -25,7 +25,7 @@ export class PaymentRepository implements IPaymentRepository {
         ${payment.paymentMethod},
         ${payment.failureReason},
         ${payment.amount},
-        ${payment.issuedAt},
+        ${payment.dueDate},
         ${payment.status},
         ${payment.createdAt},
         ${payment.updatedAt}
@@ -40,7 +40,7 @@ export class PaymentRepository implements IPaymentRepository {
         payment_method = ${payment.paymentMethod},
         failure_reason = ${payment.failureReason},
         amount = ${payment.amount},
-        issued_at = ${payment.issuedAt},
+        due_date = ${payment.dueDate},
         status = ${payment.status},
         updated_at = ${payment.updatedAt}
       WHERE id = ${payment.id}
@@ -49,7 +49,7 @@ export class PaymentRepository implements IPaymentRepository {
 
   async findByOrderId(orderId: string): Promise<Payment | null> {
     const rows = await this.db`
-      SELECT id, order_id, pix_code, payment_method, failure_reason, amount, issued_at, status, created_at, updated_at
+      SELECT id, order_id, pix_code, payment_method, failure_reason, amount, due_date, status, created_at, updated_at
       FROM payments
       WHERE order_id = ${orderId}
     `;
@@ -69,7 +69,7 @@ export class PaymentRepository implements IPaymentRepository {
       paymentMethod: row.payment_method as Payment["paymentMethod"],
       failureReason: row.failure_reason as string | null,
       amount: Number(row.amount),
-      issuedAt: new Date(row.issued_at as string),
+      dueDate: new Date(row.due_date as string),
       status: row.status as Payment["status"],
       createdAt: new Date(row.created_at as string),
       updatedAt: new Date(row.updated_at as string),

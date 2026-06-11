@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS payments (
   payment_method VARCHAR(32) NOT NULL,
   failure_reason VARCHAR(255),
   amount NUMERIC(12, 2) NOT NULL,
-  issued_at TIMESTAMP NOT NULL,
+  due_date TIMESTAMP NOT NULL,
   status VARCHAR(32) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW()
