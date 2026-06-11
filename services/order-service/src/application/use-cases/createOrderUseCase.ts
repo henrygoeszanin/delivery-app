@@ -1,11 +1,14 @@
-import type { TypeCreateOrderDTO } from "../dtos/createOrderDto";
+import type {
+  TypeCreateOrderDTO,
+  TypeCreateOrderResponseDTO,
+} from "../dtos/createOrderDto";
 import type { IOrderRepository } from "../../domain/repositories/IOrderRepository";
 import { Order } from "../../domain/entities/Order";
 import type { IEventPublisher } from "../../domain/messaging/IEventPubliser";
 import type {
   GetItemsDetails,
   ItemDetails,
-  OrderCreated,
+  GetPixCode,
 } from "packages/order.events";
 
 export class CreateOrderUseCase {
@@ -14,7 +17,7 @@ export class CreateOrderUseCase {
     private readonly publisher: IEventPublisher,
   ) {}
 
-  async execute(dto: TypeCreateOrderDTO) {
+  async execute(dto: TypeCreateOrderDTO): Promise<TypeCreateOrderResponseDTO> {
     const getItemsDetailsEvent: GetItemsDetails = {
       eventId: crypto.randomUUID(),
       eventType: "get.items.details",
@@ -24,8 +27,12 @@ export class CreateOrderUseCase {
       },
     };
 
+    console.debug("Requesting items details from inventory service");
+
     const itemsDetails: ItemDetails[] =
       await this.publisher.getItemsData(getItemsDetailsEvent);
+
+    console.debug("Received items details from inventory service");
 
     const itemsWithDetails = dto.items.map((requestedItem) => {
       const detail = itemsDetails.find(
@@ -54,11 +61,11 @@ export class CreateOrderUseCase {
 
     const order = Order.create(dto.customerId, itemsWithDetails);
 
-    await this.orderRepository.save(order);
+    order.id = await this.orderRepository.save(order);
 
-    const event: OrderCreated = {
+    const event: GetPixCode = {
       eventId: crypto.randomUUID(),
-      eventType: "order.created",
+      eventType: "get.pix.code",
       occurredAt: new Date(),
       payload: {
         orderId: order.id,
@@ -68,7 +75,14 @@ export class CreateOrderUseCase {
       },
     };
 
-    await this.publisher.createOrder(event);
+    console.debug(
+      "Requesting pix code from payment service, orderId:",
+      order.id,
+    );
+    const pixCode = await this.publisher.getPixCode(event);
+    console.debug("Received pix code from payment service");
+
+    //todo change items status in inventory service to reserved those items for this order
 
     return {
       id: order.id,
@@ -78,6 +92,7 @@ export class CreateOrderUseCase {
       status: order.status,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
+      pixCode,
     };
   }
 }

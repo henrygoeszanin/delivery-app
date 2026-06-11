@@ -14,6 +14,7 @@ import amqp from "amqplib";
 import { ProductRepository } from "./infrastructure/persistence/productRepository";
 import { ItemDetailsConsumer } from "./infrastructure/messaging/itemDetailsConsumer";
 import { rabbitConfig } from "./infrastructure/config";
+import { GetItemsByIdsUseCase } from "./application/use-cases/getProductsByIdUseCase";
 
 config();
 
@@ -25,8 +26,9 @@ await migrate(
 const connection = await amqp.connect(rabbitConfig.url);
 const channel = await connection.createChannel();
 
-const productRepo = new ProductRepository(db);
-const itemDetailsConsumer = new ItemDetailsConsumer(channel, productRepo);
+const productRepository = new ProductRepository(db);
+const useCase = new GetItemsByIdsUseCase(productRepository);
+const itemDetailsConsumer = new ItemDetailsConsumer(channel, useCase);
 await itemDetailsConsumer.start();
 
 const app = Fastify({ logger: true });
@@ -41,7 +43,8 @@ app.setErrorHandler((error, _request, reply) => {
       message: "Validation error",
       issues: error.validation.map((issue) => ({
         field:
-          issue.instancePath.replace(/^\//, "").replace(/\//g, ".") || "root",
+          issue.instancePath.replace(/^\//, "").replaceAll(/\//g, ".") ||
+          "root",
         message: issue.message,
       })),
     });

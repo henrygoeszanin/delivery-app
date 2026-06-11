@@ -4,7 +4,7 @@ export type PaymentStatus = "pending" | "approved" | "failed" | "refunded";
 export class Payment {
   constructor(
     public id: string,
-    public orderId: string,
+    public orderId: number,
     public pixCode: string,
     public paymentMethod: PaymentMethod,
     public failureReason: string | null,
@@ -17,7 +17,7 @@ export class Payment {
 
   static restore(params: {
     id: string;
-    orderId: string;
+    orderId: number;
     pixCode: string;
     paymentMethod: PaymentMethod;
     failureReason: string | null;
@@ -42,7 +42,7 @@ export class Payment {
   }
 
   static create(params: {
-    orderId: string;
+    orderId: number;
     pixCode?: string | null;
     paymentMethod: PaymentMethod;
     failureReason?: string | null;

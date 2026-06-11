@@ -10,11 +10,10 @@ import { migrate } from "@delivery/migrate";
 import { db } from "./infrastructure/persistence/db";
 import { paymentRoutes } from "./infrastructure/http/routes/paymentRoutes";
 import { PaymentRepository } from "./infrastructure/persistence/paymentRepository";
-import { CreatePaymentCodeUseCase } from "./application/use-cases/proccesPaymentUseCase";
-import { OrderCreatedConsumer } from "./infrastructure/messaging/consumer";
+import { CreatePaymentCodeUseCase } from "./application/use-cases/createPaymentCodeUseCase";
 import amqp from "amqplib";
-import { RabbitMQPublisher } from "./infrastructure/messaging/publisher";
 import { rabbitConfig } from "./infrastructure/config";
+import { GetPixCodeConsumer } from "./infrastructure/messaging/getPixCodeConsumer";
 
 await migrate(
   db,
@@ -57,11 +56,10 @@ const connection = await amqp.connect(rabbitConfig.url);
 const channel = await connection.createChannel();
 
 const repo = new PaymentRepository(db);
-const pub = new RabbitMQPublisher(channel);
 
-const useCase = new CreatePaymentCodeUseCase(repo, pub);
+const useCase = new CreatePaymentCodeUseCase(repo);
 
-const consumer = new OrderCreatedConsumer(channel, useCase);
+const consumer = new GetPixCodeConsumer(channel, useCase);
 await consumer.start();
 
 app.register(paymentRoutes, { prefix: "/api" });

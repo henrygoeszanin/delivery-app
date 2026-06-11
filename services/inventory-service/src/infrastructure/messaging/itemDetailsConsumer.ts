@@ -1,14 +1,18 @@
 import type { Channel, ConsumeMessage } from "amqplib";
-import type { IProductRepository } from "../../domain/repositories/IOrderRepository";
-import type { ItemDetails } from "packages/order.events";
+import { GetItemsByIdsUseCase } from "../../application/use-cases/getProductsByIdUseCase";
+import {
+  EXCHANGE_GET_ITEMS_DETAILS,
+  type GetItemsDetails,
+  type ItemDetails,
+} from "packages/order.events";
 
 export class ItemDetailsConsumer {
-  private readonly EXCHANGE = "get.items.details";
+  private readonly EXCHANGE = EXCHANGE_GET_ITEMS_DETAILS;
   private readonly QUEUE = "inventory-service.get.items.details";
 
   constructor(
     private readonly channel: Channel,
-    private readonly productRepo: IProductRepository,
+    private readonly getItemsByIdsUseCase: GetItemsByIdsUseCase,
   ) {}
 
   async start(): Promise<void> {
@@ -18,11 +22,7 @@ export class ItemDetailsConsumer {
 
     await this.channel.assertQueue(this.QUEUE, { durable: true });
 
-    await this.channel.bindQueue(
-      this.QUEUE,
-      this.EXCHANGE,
-      "get.items.details",
-    );
+    await this.channel.bindQueue(this.QUEUE, this.EXCHANGE, this.QUEUE);
 
     this.channel.prefetch(1);
 
@@ -32,14 +32,17 @@ export class ItemDetailsConsumer {
         if (!msg) return;
 
         try {
-          const event = JSON.parse(msg.content.toString());
-          const { itemIds } = event.payload;
+          const event: GetItemsDetails = JSON.parse(msg.content.toString());
 
-          const products = await Promise.all(
-            itemIds.map((id: string) => this.productRepo.findById(id)),
+          console.debug(
+            `Received event ${event.eventType} with correlationId ${event.eventId} for order ${event.payload.itemIds.join(", ")}`,
           );
 
-          const itemDetails: ItemDetails[] = products
+          const { itemIds } = event.payload;
+
+          const items = await this.getItemsByIdsUseCase.execute(itemIds);
+
+          const itemDetails: ItemDetails[] = items
             .filter((p): p is NonNullable<typeof p> => p !== null)
             .map((p) => ({
               productId: p.id,

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS payments (
   id UUID PRIMARY KEY,
-  order_id UUID NOT NULL,
+  order_id INT NOT NULL,
   pix_code VARCHAR(255),
   payment_method VARCHAR(32) NOT NULL,
   failure_reason VARCHAR(255),

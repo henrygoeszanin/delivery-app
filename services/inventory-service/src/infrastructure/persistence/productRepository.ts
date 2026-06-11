@@ -33,9 +33,10 @@ export class ProductRepository implements IProductRepository {
     return new Product(
       productData.id,
       productData.name,
-      productData.description,
       productData.price,
       productData.stock,
+      productData.description,
+      productData.photo_url,
       productData.created_at,
       productData.updated_at,
     );

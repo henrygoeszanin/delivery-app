@@ -47,7 +47,7 @@ export class PaymentRepository implements IPaymentRepository {
     `;
   }
 
-  async findByOrderId(orderId: string): Promise<Payment | null> {
+  async findByOrderId(orderId: number): Promise<Payment | null> {
     const rows = await this.db`
       SELECT id, order_id, pix_code, payment_method, failure_reason, amount, due_date, status, created_at, updated_at
       FROM payments
@@ -64,7 +64,7 @@ export class PaymentRepository implements IPaymentRepository {
   private toEntity(row: Record<string, unknown>): Payment {
     return Payment.restore({
       id: row.id as string,
-      orderId: row.order_id as string,
+      orderId: row.order_id as number,
       pixCode: row.pix_code as string,
       paymentMethod: row.payment_method as Payment["paymentMethod"],
       failureReason: row.failure_reason as string | null,

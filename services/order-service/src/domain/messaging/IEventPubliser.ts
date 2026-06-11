@@ -1,10 +1,10 @@
 import type {
   GetItemsDetails,
-  OrderCreated,
+  GetPixCode,
   ItemDetails,
 } from "packages/order.events";
 
 export interface IEventPublisher {
-  createOrder(event: OrderCreated): Promise<void>;
+  getPixCode(event: GetPixCode): Promise<string>;
   getItemsData(event: GetItemsDetails): Promise<ItemDetails[]>;
 }

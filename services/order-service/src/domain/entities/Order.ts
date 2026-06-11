@@ -13,7 +13,7 @@ export type OrderStatus =
 
 export class Order {
   constructor(
-    public id: string,
+    public id: number,
     public customerId: string,
     public items: Array<{
       productId: string;
@@ -30,7 +30,7 @@ export class Order {
   ) {}
 
   static restore(params: {
-    id: string;
+    id: number;
     customerId: string;
     items: Array<{
       productId: string;
@@ -81,8 +81,7 @@ export class Order {
     }, 0);
 
     const now = new Date();
-    const id = crypto.randomUUID();
-    return new Order(id, customerId, items, totalAmount, "pending", now, now);
+    return new Order(0, customerId, items, totalAmount, "pending", now, now);
   }
 
   updateDetails(params: {

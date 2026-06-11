@@ -5,11 +5,11 @@ export type DomainEvent<T extends string, P> = {
   payload: P;
 };
 
-export const EXCHANGE_ORDER_CREATED = "order.created";
-export type OrderCreated = DomainEvent<
-  "order.created",
+export const EXCHANGE_GET_PIX_CODE = "get.pix.code";
+export type GetPixCode = DomainEvent<
+  "get.pix.code",
   {
-    orderId: string;
+    orderId: number;
     customerId: string;
     items: Array<{ productId: string; quantity: number; unitPrice: number }>;
     totalAmount: number;
@@ -29,17 +29,6 @@ export type ItemDetails = {
   unitPrice: number;
   quantity: number;
 };
-
-export type PixGenerated = DomainEvent<
-  "payment.pix_generated",
-  {
-    orderId: string;
-    paymentId: string;
-    pixCode: string;
-    amount: number;
-    dueDate: Date;
-  }
->;
 
 export type StockReserved = DomainEvent<
   "inventory.stock_reserved",
