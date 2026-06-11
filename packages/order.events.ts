@@ -37,6 +37,7 @@ export type PixGenerated = DomainEvent<
     paymentId: string;
     pixCode: string;
     amount: number;
+    dueDate: Date;
   }
 >;
 

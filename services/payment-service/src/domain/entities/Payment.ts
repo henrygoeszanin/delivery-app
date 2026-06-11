@@ -9,7 +9,7 @@ export class Payment {
     public paymentMethod: PaymentMethod,
     public failureReason: string | null,
     public amount: number,
-    public issuedAt: Date,
+    public dueDate: Date,
     public status: PaymentStatus,
     public createdAt: Date,
     public updatedAt: Date,
@@ -22,7 +22,7 @@ export class Payment {
     paymentMethod: PaymentMethod;
     failureReason: string | null;
     amount: number;
-    issuedAt: Date;
+    dueDate: Date;
     status: PaymentStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -34,7 +34,7 @@ export class Payment {
       params.paymentMethod,
       params.failureReason,
       params.amount,
-      params.issuedAt,
+      params.dueDate,
       params.status,
       params.createdAt,
       params.updatedAt,
@@ -47,7 +47,7 @@ export class Payment {
     paymentMethod: PaymentMethod;
     failureReason?: string | null;
     amount: number;
-    issuedAt: Date;
+    dueDate: Date;
     status?: PaymentStatus;
   }): Payment {
     const now = new Date();
@@ -58,7 +58,7 @@ export class Payment {
       params.paymentMethod,
       params.failureReason ?? null,
       params.amount,
-      params.issuedAt,
+      params.dueDate,
       params.status ?? "pending",
       now,
       now,
@@ -87,8 +87,8 @@ export class Payment {
     this.updatedAt = new Date();
   }
 
-  setIssuedAt(issuedAt: Date) {
-    this.issuedAt = issuedAt;
+  setDueDate(dueDate: Date) {
+    this.dueDate = dueDate;
     this.updatedAt = new Date();
   }
 

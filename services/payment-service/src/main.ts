@@ -10,7 +10,7 @@ import { migrate } from "@delivery/migrate";
 import { db } from "./infrastructure/persistence/db";
 import { paymentRoutes } from "./infrastructure/http/routes/paymentRoutes";
 import { PaymentRepository } from "./infrastructure/persistence/paymentRepository";
-import { ProcessPaymentUseCase } from "./application/use-cases/proccesPaymentUseCase";
+import { CreatePaymentCodeUseCase } from "./application/use-cases/proccesPaymentUseCase";
 import { OrderCreatedConsumer } from "./infrastructure/messaging/consumer";
 import amqp from "amqplib";
 import { RabbitMQPublisher } from "./infrastructure/messaging/publisher";
@@ -58,7 +58,8 @@ const channel = await connection.createChannel();
 
 const repo = new PaymentRepository(db);
 const pub = new RabbitMQPublisher(channel);
-const useCase = new ProcessPaymentUseCase(repo, pub);
+
+const useCase = new CreatePaymentCodeUseCase(repo, pub);
 
 const consumer = new OrderCreatedConsumer(channel, useCase);
 await consumer.start();
