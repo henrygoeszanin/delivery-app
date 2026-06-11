@@ -4,21 +4,21 @@ import { Customer } from "../../domain/entities/Customer";
 
 export type CreateCustomerResult =
   | { success: true; customer: Customer }
-  | { success: false; reason: "telephone_already_registered" };
+  | { success: false; reason: "phone_already_registered" };
 
 export class CreateCustomerUseCase {
   constructor(private readonly customerRepository: ICustomerRepository) {}
 
   async execute(dto: TypeCreateCustomerDTO): Promise<CreateCustomerResult> {
     const existingCustomer = await this.customerRepository.findByTelephone(
-      dto.telephone,
+      dto.phone,
     );
 
     if (existingCustomer) {
-      return { success: false, reason: "telephone_already_registered" };
+      return { success: false, reason: "phone_already_registered" };
     }
 
-    const customer = Customer.create(dto.name, dto.telephone);
+    const customer = Customer.create(dto.name, dto.phone);
     await this.customerRepository.save(customer);
 
     return { success: true, customer };

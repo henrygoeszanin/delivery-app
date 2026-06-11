@@ -1,5 +1,10 @@
-import type { OrderCreated } from "packages/order.events";
+import type {
+  GetItemsDetails,
+  OrderCreated,
+  ItemDetails,
+} from "packages/order.events";
 
 export interface IEventPublisher {
-  publish(event: OrderCreated): Promise<void>;
+  createOrder(event: OrderCreated): Promise<void>;
+  getItemsData(event: GetItemsDetails): Promise<ItemDetails[]>;
 }

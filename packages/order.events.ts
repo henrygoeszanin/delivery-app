@@ -5,6 +5,7 @@ export type DomainEvent<T extends string, P> = {
   payload: P;
 };
 
+export const EXCHANGE_ORDER_CREATED = "order.created";
 export type OrderCreated = DomainEvent<
   "order.created",
   {
@@ -14,6 +15,20 @@ export type OrderCreated = DomainEvent<
     totalAmount: number;
   }
 >;
+
+export const EXCHANGE_GET_ITEMS_DETAILS = "get.items.details";
+export type GetItemsDetails = DomainEvent<
+  "get.items.details",
+  {
+    itemIds: Array<string>;
+  }
+>;
+export type ItemDetails = {
+  productId: string;
+  name: string;
+  unitPrice: number;
+  quantity: number;
+};
 
 export type PixGenerated = DomainEvent<
   "payment.pix_generated",

@@ -10,6 +10,10 @@ import {
 } from "fastify-type-provider-zod";
 import { inventoryRoutes } from "./infrastructure/http/routes/inventoryRoutes";
 import { config } from "dotenv";
+import amqp from "amqplib";
+import { ProductRepository } from "./infrastructure/persistence/productRepository";
+import { ItemDetailsConsumer } from "./infrastructure/messaging/itemDetailsConsumer";
+import { rabbitConfig } from "./infrastructure/config";
 
 config();
 
@@ -18,10 +22,12 @@ await migrate(
   join(import.meta.dir, "infrastructure", "persistence", "migrations"),
 );
 
-await migrate(
-  db,
-  join(import.meta.dir, "infrastructure", "persistence", "migrations"),
-);
+const connection = await amqp.connect(rabbitConfig.url);
+const channel = await connection.createChannel();
+
+const productRepo = new ProductRepository(db);
+const itemDetailsConsumer = new ItemDetailsConsumer(channel, productRepo);
+await itemDetailsConsumer.start();
 
 const app = Fastify({ logger: true });
 

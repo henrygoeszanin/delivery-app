@@ -6,7 +6,6 @@ export const CreateOrderDTO = zod.object({
     zod.object({
       productId: zod.string(),
       quantity: zod.number().int().positive(),
-      unitPrice: zod.number().positive(),
     }),
   ),
 });

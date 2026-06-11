@@ -5,3 +5,8 @@ export const dbConfig = {
   user: process.env.DB_USER ?? "postgres",
   password: process.env.DB_PASSWORD ?? "secret",
 };
+
+export const rabbitConfig = {
+  url: process.env.RABBITMQ_URL ?? "amqp://guest:guest@localhost:5672",
+  exchange: process.env.RABBITMQ_EXCHANGE ?? "delivery.events",
+};
